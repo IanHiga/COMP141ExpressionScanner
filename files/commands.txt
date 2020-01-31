@@ -1,0 +1,12 @@
+---------------
+USER COMMANDS
+---------------
+Format: 'input' - definition
+---------------
+
+'help' - Displays list of useable commands.
+
+'quit' - Exits program.
+
+---------------
+Awaiting next command...
