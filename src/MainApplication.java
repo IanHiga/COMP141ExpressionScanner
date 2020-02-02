@@ -16,6 +16,7 @@ public class MainApplication {
 		boolean io = false;
 		
 		userIn = scan.nextLine();
+		scan.close();
 		char[] command = userIn.toCharArray();
 				
 		for(int i = 5; i < command.length; i++) {
@@ -44,8 +45,19 @@ public class MainApplication {
 			File output = new File(DIRECTORY + out + FILE_EXTENSION);
 
 			if(input.exists() && ! (output.exists())){		
-				Scanner inScan = new Scanner(DIRECTORY + in + FILE_EXTENSION);
+				//PROCEED WITH SCAN
+				try {
+					scan = new Scanner(input);
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return;
+				}
 				
+				do {
+					System.out.println(scan.nextLine());
+				} while(scan.hasNext());
+				scan.close();
 			}
 			else {
 				System.out.println("An error has occured:\n");
@@ -57,7 +69,6 @@ public class MainApplication {
 				}
 			}
 		}
-		scan.close();
 	}
 	
 	private static void scanInputLine(String in) {
