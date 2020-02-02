@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class MainApplication {
@@ -10,9 +11,9 @@ public class MainApplication {
 	public static void main(String[] args) {
 		String userIn = null;
 		Scanner scan = new Scanner(System.in);
+		
 		System.out.println("Scanner is initialized.\n-----------------------\nCurrent file directory: " +
 				DIRECTORY + "\nInput 'quit' to quit\nInput 'help' for command list\n");
-		//String test = userIn.nextLine();
 		do {
 			System.out.println("Awaiting next command...\n");
 			userIn = scan.nextLine();
@@ -31,36 +32,59 @@ public class MainApplication {
 				}
 				tempScan.close();
 			}
-			else if(userIn.contentEquals("scan")) {
-				String temp;
-				boolean accepted = false;
+			else if(userIn.contains("scan")) {
+				String in = "";
+				String out = "";
+				boolean io = false;
+				char[] command = userIn.toCharArray();
 				
-				//Input file specification
-				do {
-					System.out.println("Input .txt filename: ");
-					temp = scan.nextLine();
-					if(temp.contentEquals("quit")) {
-						break;
+				for(int i = 5; i < command.length; i++) {
+					if(command[i] != ' ' && !io) {
+						in += command[i];
 					}
-					File input = new File(DIRECTORY + temp + FILE_EXTENSION);
-					if(!(input.exists())) {
-						System.out.println("Input file '" + DIRECTORY + temp + FILE_EXTENSION + "' does not exist.\n"
-								+ "Please enter an existing filename, or use 'quit' to exit\n");
+					else if (io) {
+						if(command[i] == ' ') {
+							break;
+						}
+						out += command[i];
 					}
 					else {
-						accepted = true;
+						io = true;
+					}	
+				}
+				
+				if(in.contentEquals("") || out.contentEquals("")) {
+					System.out.println("An error has occured:\nNot enough arguments.\n");
+				}
+				else if(in.contentEquals("commands") || out.contentEquals("commands")){
+					System.out.println("An error has occured:\nCannot use commands file as input or output.\n");
+				}
+				else {
+					File input = new File(DIRECTORY + in + FILE_EXTENSION);
+					File output = new File(DIRECTORY + out + FILE_EXTENSION);
+					
+					if(input.exists() && ! (output.exists())){					
+						scanInputFile(in, out);
 					}
-				} while(!accepted);
-				//Output file specification
-				if(!(temp.contentEquals("quit"))) {					
-					System.out.println("Output .txt filename: ");
-					File output = new File(DIRECTORY + temp + FILE_EXTENSION);
+					else {
+						System.out.println("An error has occured:\n");
+						if(! input.exists()) {
+							System.out.println("Input file " + DIRECTORY + in + FILE_EXTENSION + " does not exist.\n");
+						}
+						if(output.exists()) {
+							System.out.println("Output file " + DIRECTORY + out + FILE_EXTENSION + " already exists.\n");
+						}
+					}
 				}
 			}
 		} while(! (userIn.contentEquals("quit")));
 		
 		System.out.println("\nShutting down...");
 		scan.close();
+	}
+	
+	private static void scanInputFile(String in, String out) {
+		
 	}
 
 }

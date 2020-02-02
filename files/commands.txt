@@ -8,5 +8,10 @@ Format: 'input' - definition
 
 'quit' - Exits program.
 
+'scan <input> <output>' - scans an input file and sends the list of tokens in a specified output file.
+
+	<Note: Use just the file name when prompted for in/out file names. The file type is added automatically.>
+	<If a file does not exist, a new one will be created.>
+
 ---------------
 Awaiting next command...
