@@ -3,6 +3,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 public class MainApplication {
 	public static final String DIRECTORY = "files/";
@@ -37,9 +38,6 @@ public class MainApplication {
 		if(in.contentEquals("") || out.contentEquals("")) {
 			System.out.println("An error has occured:\nNot enough arguments.\n");
 		}
-		else if(in.contentEquals("commands") || out.contentEquals("commands")){
-			System.out.println("An error has occured:\nCannot use commands file as input or output.\n");
-		}
 		else {
 			File input = new File(DIRECTORY + in + FILE_EXTENSION);
 			File output = new File(DIRECTORY + out + FILE_EXTENSION);
@@ -54,8 +52,16 @@ public class MainApplication {
 					return;
 				}
 				
+				try {
+					output.createNewFile();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return;
+				}
+				
 				do {
-					System.out.println(scan.nextLine());
+					scanInputLine(scan.nextLine(), output);
 				} while(scan.hasNext());
 				scan.close();
 			}
@@ -71,8 +77,29 @@ public class MainApplication {
 		}
 	}
 	
-	private static void scanInputLine(String in) {
-		
+	private static void scanInputLine(String in, File out) {
+		char[] tokenChars = in.toCharArray();
+		String temp = "";
+		for(int i = 0; i < in.length(); i++) {
+			if(tokenChars[i] == ' ') {
+				if(Pattern.matches("\\d+", temp)) {
+					System.out.println(temp + " is a digit");
+				}
+				else if(Pattern.matches("[+ | \\- | * | / | ( | )]", temp)) {
+					System.out.println(temp + " is an operator");
+				}
+				else if(Pattern.matches("[[a-z] | [A-Z]][[a-z] | [A-Z] | [0-9]]+", temp)){
+					System.out.println(temp + " is an identifier");
+				}
+				else {
+					System.out.println(temp + " is not defined");
+				}
+				temp = "";
+			}
+			else {				
+				temp += tokenChars[i];
+			}
+		}
 	}
 
 }
