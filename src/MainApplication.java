@@ -80,24 +80,56 @@ public class MainApplication {
 	private static void scanInputLine(String in, File out) {
 		char[] tokenChars = in.toCharArray();
 		String temp = "";
+		String next = "";
+		boolean matched;
 		for(int i = 0; i < in.length(); i++) {
-			if(tokenChars[i] == ' ') {
+			next = "";
+			next += tokenChars[i];
+			matched = false;
+			
+			if(Pattern.matches("\\d+", temp)) {
+				if(!Pattern.matches("\\d", next)) {
+					System.out.println(temp + " is a digit");
+					temp = "";
+				}
+				matched = true;
+			}
+			else if(Pattern.matches("[+|\\-|*|/|(|)]", temp)) {
+				System.out.println(temp + " is an operator");
+				temp = "";
+				matched = true;
+			}
+			else if(Pattern.matches("[[a-z]|[A-Z]][[a-z]|[A-Z]|[0-9]]*", temp)) {
+				if(!(Pattern.matches("[a-z]|[A-Z]|[0-9]", next))) {
+					System.out.println(temp + " is an identifier");
+					temp = "";
+				}
+				matched = true;
+			}
+			
+			if(!next.contentEquals(" ")) {		
+				if(!matched) {
+					if(!temp.contentEquals("")) {
+						System.out.println(temp + " is an ERROR");
+						temp = "";
+					}
+				}
+				temp += tokenChars[i];
+			}
+			else {
 				if(Pattern.matches("\\d+", temp)) {
 					System.out.println(temp + " is a digit");
 				}
 				else if(Pattern.matches("[+ | \\- | * | / | ( | )]", temp)) {
 					System.out.println(temp + " is an operator");
 				}
-				else if(Pattern.matches("[[a-z] | [A-Z]][[a-z] | [A-Z] | [0-9]]+", temp)){
+				else if(Pattern.matches("[[a-z]|[A-Z]][[a-z]|[A-Z]|[0-9]]*", temp)) {
 					System.out.println(temp + " is an identifier");
 				}
-				else {
-					System.out.println(temp + " is not defined");
+				else if(!temp.contentEquals("")){
+					System.out.println(temp + " is an ERROR");
 				}
 				temp = "";
-			}
-			else {				
-				temp += tokenChars[i];
 			}
 		}
 	}
