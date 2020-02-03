@@ -6,6 +6,12 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
+/*
+ * COMP 141- Programming Languages
+ * Name: Ian Higa
+ * Project Phase: 1.1
+ */
+
 public class MainApplication {
 	public static final String DIRECTORY = "files/";
 	public static final String FILE_EXTENSION = ".txt";
