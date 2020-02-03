@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -79,57 +80,46 @@ public class MainApplication {
 	
 	private static void scanInputLine(String in, File out) {
 		char[] tokenChars = in.toCharArray();
+		String tokenType = "";
 		String temp = "";
 		String next = "";
 		boolean matched;
+		try {
+			FileWriter write = new FileWriter(out);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
+		
 		for(int i = 0; i < in.length(); i++) {
 			next = "";
 			next += tokenChars[i];
 			matched = false;
+			tokenType = "";
 			
-			if(Pattern.matches("\\d+", temp)) {
-				if(!Pattern.matches("\\d", next)) {
-					System.out.println(temp + " is a digit");
-					temp = "";
+			if(Pattern.matches("[0-9]+", temp)) {
+				if(!Pattern.matches("[0-9]", next)) {
+					tokenType = "DIGIT";
 				}
-				matched = true;
 			}
 			else if(Pattern.matches("[+|\\-|*|/|(|)]", temp)) {
-				System.out.println(temp + " is an operator");
-				temp = "";
-				matched = true;
+				tokenType = "OPERATOR";
 			}
 			else if(Pattern.matches("[[a-z]|[A-Z]][[a-z]|[A-Z]|[0-9]]*", temp)) {
 				if(!(Pattern.matches("[a-z]|[A-Z]|[0-9]", next))) {
-					System.out.println(temp + " is an identifier");
-					temp = "";
+					tokenType = "IDENTIFIER";
 				}
-				matched = true;
+			}
+			else if(!temp.contentEquals("")){
+				tokenType = "ERROR";
 			}
 			
-			if(!next.contentEquals(" ")) {		
-				if(!matched) {
-					if(!temp.contentEquals("")) {
-						System.out.println(temp + " is an ERROR");
-						temp = "";
-					}
-				}
-				temp += tokenChars[i];
-			}
-			else {
-				if(Pattern.matches("\\d+", temp)) {
-					System.out.println(temp + " is a digit");
-				}
-				else if(Pattern.matches("[+ | \\- | * | / | ( | )]", temp)) {
-					System.out.println(temp + " is an operator");
-				}
-				else if(Pattern.matches("[[a-z]|[A-Z]][[a-z]|[A-Z]|[0-9]]*", temp)) {
-					System.out.println(temp + " is an identifier");
-				}
-				else if(!temp.contentEquals("")){
-					System.out.println(temp + " is an ERROR");
-				}
+			if(!tokenType.contentEquals("")) {	
+				System.out.println(temp + ": " + tokenType);
 				temp = "";
+			}
+			if(!next.contentEquals(" ")) {		
+				temp += next;
 			}
 		}
 	}
