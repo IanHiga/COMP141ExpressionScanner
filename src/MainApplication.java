@@ -42,6 +42,7 @@ public class MainApplication {
 		else {
 			File input = new File(DIRECTORY + in + FILE_EXTENSION);
 			File output = new File(DIRECTORY + out + FILE_EXTENSION);
+			FileWriter tokenOut;
 
 			if(input.exists() && ! (output.exists())){		
 				//PROCEED WITH SCAN
@@ -58,12 +59,32 @@ public class MainApplication {
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+					scan.close();
 					return;
 				}
 				
+				try {
+					tokenOut = new FileWriter(output);
+				} catch (IOException e) {
+					e.printStackTrace();
+					scan.close();
+					return;
+				}
+
 				do {
-					scanInputLine(scan.nextLine(), output);
+					try {
+						tokenOut.write(scanInputLine(scan.nextLine()));
+					} catch (IOException e) {
+						e.printStackTrace();
+						scan.close();
+						break;
+					}
 				} while(scan.hasNext());
+				try {
+					tokenOut.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				scan.close();
 			}
 			else {
@@ -78,23 +99,17 @@ public class MainApplication {
 		}
 	}
 	
-	private static void scanInputLine(String in, File out) {
+	private static String scanInputLine(String in) {
+		in += " ";
 		char[] tokenChars = in.toCharArray();
 		String tokenType = "";
 		String temp = "";
 		String next = "";
-		boolean matched;
-		try {
-			FileWriter write = new FileWriter(out);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return;
-		}
+		String tokens = "Line: " + in + "\n";
 		
 		for(int i = 0; i < in.length(); i++) {
 			next = "";
 			next += tokenChars[i];
-			matched = false;
 			tokenType = "";
 			
 			if(Pattern.matches("[0-9]+", temp)) {
@@ -115,13 +130,15 @@ public class MainApplication {
 			}
 			
 			if(!tokenType.contentEquals("")) {	
-				System.out.println(temp + ": " + tokenType);
+				tokens += temp + " : " + tokenType + "\n";
 				temp = "";
 			}
 			if(!next.contentEquals(" ")) {		
 				temp += next;
 			}
 		}
+		tokens += "\n";
+		return(tokens);
 	}
 
 }
