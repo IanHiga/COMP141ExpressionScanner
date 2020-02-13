@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 /*
  * COMP 141- Programming Languages
  * Name: Ian Higa
- * Project Phase: 1.1
+ * Project Phase: 1.2
  */
 
 public class MainApplication {
@@ -48,59 +48,61 @@ public class MainApplication {
 		else {
 			File input = new File(DIRECTORY + in + FILE_EXTENSION);
 			File output = new File(DIRECTORY + out + FILE_EXTENSION);
-			FileWriter tokenOut;
+			readFile(input, output);
+		}
+	}
+	
+	private static void readFile(File in, File out) {
+		FileWriter tokenOut;
 
-			if(input.exists() && ! (output.exists())){		
-				//PROCEED WITH SCAN
-				try {
-					scan = new Scanner(input);
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					return;
-				}
-				
-				try {
-					output.createNewFile();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					scan.close();
-					return;
-				}
-				
-				try {
-					tokenOut = new FileWriter(output);
-				} catch (IOException e) {
-					e.printStackTrace();
-					scan.close();
-					return;
-				}
-
-				do {
-					try {
-						tokenOut.write(scanInputLine(scan.nextLine()));
-					} catch (IOException e) {
-						e.printStackTrace();
-						scan.close();
-						break;
-					}
-				} while(scan.hasNext());
-				try {
-					tokenOut.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				scan.close();
+		if(in.exists()){		
+			//PROCEED WITH SCAN
+			Scanner scan;
+			try {
+				scan = new Scanner(in);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return;
 			}
-			else {
-				System.out.println("An error has occured:\n");
-				if(! input.exists()) {
-					System.out.println("Input file " + DIRECTORY + in + FILE_EXTENSION + " does not exist.\n");
+			
+			try {
+				out.createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				scan.close();
+				return;
+			}
+			
+			try {
+				tokenOut = new FileWriter(out);
+			} catch (IOException e) {
+				e.printStackTrace();
+				scan.close();
+				return;
+			}
+
+			do {
+				try {
+					tokenOut.write(scanInputLine(scan.nextLine()));
+				} catch (IOException e) {
+					e.printStackTrace();
+					scan.close();
+					break;
 				}
-				if(output.exists()) {
-					System.out.println("Output file " + DIRECTORY + out + FILE_EXTENSION + " already exists.\n");
-				}
+			} while(scan.hasNext());
+			try {
+				tokenOut.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			scan.close();
+		}
+		else {
+			System.out.println("An error has occured:\n");
+			if(! in.exists()) {
+				System.out.println("Input file " + DIRECTORY + in + FILE_EXTENSION + " does not exist.\n");
 			}
 		}
 	}
@@ -123,23 +125,31 @@ public class MainApplication {
 					tokenType = "DIGIT";
 				}
 			}
-			else if(Pattern.matches("[+|\\-|*|/|(|)]", temp)) {
-				tokenType = "OPERATOR";
+			else if(Pattern.matches("[+|\\-|*|/|(|)|;]", temp) || Pattern.matches("[:]|[:][=]", temp)) {
+				if(!Pattern.matches("[:]", temp)) {		
+					tokenType = "SYMBOL";
+				}
 			}
 			else if(Pattern.matches("[[a-z]|[A-Z]][[a-z]|[A-Z]|[0-9]]*", temp)) {
-				if(!(Pattern.matches("[a-z]|[A-Z]|[0-9]", next))) {
+				if(temp.contentEquals("if") || temp.contentEquals("then") || temp.contentEquals("elseif") || temp.contentEquals("while")
+						|| temp.contentEquals("do") || temp.contentEquals("endwhile") || temp.contentEquals("skip")) {
+					tokenType = "KEYWORD";
+				}
+				else if(!(Pattern.matches("[a-z]|[A-Z]|[0-9]", next))) {					
 					tokenType = "IDENTIFIER";
 				}
 			}
-			else if(!temp.contentEquals("")){
+			else if(!temp.contentEquals("") && !next.contentEquals("\t")){
 				tokenType = "ERROR";
+				tokens += "ERROR READING '" + temp + "'!\n\n";
+				return(tokens);
 			}
 			
 			if(!tokenType.contentEquals("")) {	
 				tokens += temp + " : " + tokenType + "\n";
 				temp = "";
 			}
-			if(!next.contentEquals(" ")) {		
+			if(!next.contentEquals(" ") && !next.contentEquals("\t")) {		
 				temp += next;
 			}
 		}
